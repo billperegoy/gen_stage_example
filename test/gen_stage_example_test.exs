@@ -26,7 +26,23 @@ defmodule GenStageExampleTest do
     PhotoQueue.add(queue, "item-4")
     PhotoQueue.add(queue, "item-5")
     PhotoQueue.add(queue, "item-6")
-    Process.sleep(15000)
+    Process.sleep(13000)
+    assert PhotoQueue.list(queue) == []
+  end
+
+  test "multiple consumers speed up process" do
+    {:ok, queue} = PhotoQueue.start_link()
+    {:ok, processor_1} = PhotoProcessor.start_link()
+    {:ok, processor_2} = PhotoProcessor.start_link()
+    PhotoQueue.add(queue, "item-1")
+    PhotoQueue.add(queue, "item-2")
+    PhotoQueue.add(queue, "item-3")
+    GenStage.sync_subscribe(processor_1, to: queue, max_demand: 1)
+    GenStage.sync_subscribe(processor_2, to: queue, max_demand: 1)
+    PhotoQueue.add(queue, "item-4")
+    PhotoQueue.add(queue, "item-5")
+    PhotoQueue.add(queue, "item-6")
+    Process.sleep(7000)
     assert PhotoQueue.list(queue) == []
   end
 end
