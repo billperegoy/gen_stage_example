@@ -7,14 +7,21 @@ defmodule PhotoQueue do
   end
 
   def init(queue) do
-    IO.puts("Init...")
     {:producer, queue}
   end
 
+  # FIXME - after queue is empty, we nom longer process new elements
   def handle_demand(demand, queue) when demand > 0 do
     # FIXME - assume demand is always 1 to start
-    {{:value, item_to_process}, queue} = :queue.out(queue)
-    {:noreply, item_to_process, queue}
+    IO.puts("Handing demand...")
+    IO.inspect(demand)
+
+    if :queue.len(queue) > 0 do
+      {{:value, item_to_process}, new_queue} = :queue.out(queue)
+      {:noreply, [item_to_process], new_queue}
+    else
+      {:noreply, [], queue}
+    end
   end
 
   def handle_cast({:add, item}, queue) do
