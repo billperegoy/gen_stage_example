@@ -30,6 +30,26 @@ defmodule GenStageExampleTest do
     assert PhotoQueue.list(queue) == []
   end
 
+  test "can handle new events after queue is empty" do
+    {:ok, queue} = PhotoQueue.start_link()
+    {:ok, processor} = PhotoProcessor.start_link()
+    PhotoQueue.add(queue, "item-1")
+    PhotoQueue.add(queue, "item-2")
+    PhotoQueue.add(queue, "item-3")
+    GenStage.sync_subscribe(processor, to: queue, max_demand: 1)
+    PhotoQueue.add(queue, "item-4")
+    PhotoQueue.add(queue, "item-5")
+    PhotoQueue.add(queue, "item-6")
+    Process.sleep(13000)
+    assert PhotoQueue.list(queue) == []
+    PhotoQueue.add(queue, "item-7")
+    Process.sleep(3000)
+    assert PhotoQueue.list(queue) == []
+    PhotoQueue.add(queue, "item-8")
+    Process.sleep(3000)
+    assert PhotoQueue.list(queue) == []
+  end
+
   test "multiple consumers speed up process" do
     {:ok, queue} = PhotoQueue.start_link()
     {:ok, processor_1} = PhotoProcessor.start_link()

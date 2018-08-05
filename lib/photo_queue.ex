@@ -9,8 +9,11 @@ defmodule PhotoQueue do
     {:producer, state}
   end
 
-  # FIXME - after queue is empty, we nom longer process new elements
   def handle_demand(demand, {queue, unmet_demand}) when demand == 1 do
+    process_demand(demand, {queue, unmet_demand})
+  end
+
+  def process_demand(demand, {queue, unmet_demand}) do
     if :queue.len(queue) > 0 do
       {{:value, item_to_process}, new_queue} = :queue.out(queue)
       {:noreply, [item_to_process], {new_queue, unmet_demand}}
@@ -20,7 +23,14 @@ defmodule PhotoQueue do
   end
 
   def handle_cast({:add, item}, {queue, unmet_demand}) do
-    {:noreply, [], {:queue.in(item, queue), unmet_demand}}
+    new_queue = :queue.in(item, queue)
+
+    if unmet_demand > 0 do
+      {{:value, item_to_process}, newer_queue} = :queue.out(new_queue)
+      {:noreply, [item_to_process], {newer_queue, unmet_demand - 1}}
+    else
+      {:noreply, [], {new_queue, unmet_demand}}
+    end
   end
 
   def handle_call(:list, _from, {queue, unmet_demand}) do
