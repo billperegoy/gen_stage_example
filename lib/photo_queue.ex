@@ -24,9 +24,6 @@ defmodule PhotoQueue do
   end
 
   def handle_cast({:add, item}, {queue, unmet_demand}) do
-    # new_queue = :queue.in(item, queue)
-
-    # {{:value, item_to_process}, newer_queue} = :queue.out(new_queue)
     {:noreply, [item], {queue, unmet_demand - 1}}
   end
 
