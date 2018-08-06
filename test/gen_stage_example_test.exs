@@ -26,7 +26,7 @@ defmodule GenStageExampleTest do
     PhotoQueue.add(queue, "item-4")
     PhotoQueue.add(queue, "item-5")
     PhotoQueue.add(queue, "item-6")
-    Process.sleep(13000)
+    Process.sleep(7000)
     assert PhotoQueue.list(queue) == []
   end
 
@@ -40,13 +40,13 @@ defmodule GenStageExampleTest do
     PhotoQueue.add(queue, "item-4")
     PhotoQueue.add(queue, "item-5")
     PhotoQueue.add(queue, "item-6")
-    Process.sleep(13000)
+    Process.sleep(7000)
     assert PhotoQueue.list(queue) == []
     PhotoQueue.add(queue, "item-7")
-    Process.sleep(3000)
+    Process.sleep(1100)
     assert PhotoQueue.list(queue) == []
     PhotoQueue.add(queue, "item-8")
-    Process.sleep(3000)
+    Process.sleep(1100)
     assert PhotoQueue.list(queue) == []
   end
 
@@ -62,7 +62,7 @@ defmodule GenStageExampleTest do
     PhotoQueue.add(queue, "item-4")
     PhotoQueue.add(queue, "item-5")
     PhotoQueue.add(queue, "item-6")
-    Process.sleep(7000)
+    Process.sleep(3100)
     assert PhotoQueue.list(queue) == []
   end
 end
