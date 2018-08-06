@@ -18,12 +18,12 @@ defmodule PhotoQueue do
     end
   end
 
-  def handle_cast({:add, item}, {queue, 0 = unmet_demand}) do
+  def handle_cast({:add, item}, {queue, unmet_demand}) when unmet_demand == 0 do
     new_queue = :queue.in(item, queue)
     {:noreply, [], {new_queue, unmet_demand}}
   end
 
-  def handle_cast({:add, item}, {queue, unmet_demand}) do
+  def handle_cast({:add, item}, {queue, unmet_demand}) when unmet_demand > 0 do
     {:noreply, [item], {queue, unmet_demand - 1}}
   end
 
